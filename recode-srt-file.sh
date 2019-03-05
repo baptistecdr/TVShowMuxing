@@ -12,14 +12,14 @@ fi
 ENCODING_TO="UTF-8"
 
 if [[ $# -ne 1 ]]; then
-    echo "Usage: $0 srt_file"
+    (>&2 echo "Usage: $0 srt_file")
     exit 1
 fi
 
 SRT_FILE="$1"
 
 if [[ ! -f "$SRT_FILE" ]]; then
-    echo "The file $SRT_FILE does not exist."
+    (>&2 echo "The file $SRT_FILE does not exist.")
     exit 2
 fi
 
@@ -31,12 +31,11 @@ fi
 
 if [[ "$ENCODING_FROM" == "$ENCODING_TO" ]]; then
     echo "$0: the file $SRT_FILE is already in UTF-8 format."
-    dos2unix "$SRT_FILE"
-    exit 3
+else
+    echo "recode: converting file $SRT_FILE from $ENCODING_FROM to $ENCODING_TO..."
+    recode "$ENCODING_FROM".."$ENCODING_TO" "$SRT_FILE"
 fi
 
-echo "recode: converting file $SRT_FILE from $ENCODING_FROM to $ENCODING_TO..."
-recode "$ENCODING_FROM".."$ENCODING_TO" "$SRT_FILE"
 dos2unix "$SRT_FILE"
 
 exit 0

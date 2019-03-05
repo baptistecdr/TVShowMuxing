@@ -9,24 +9,24 @@ FILEBOT_FORMAT="{plex}"
 LANG="en"
 
 if [[ $# -lt 1 ]]; then
-    echo "Usage: $0 tv_show_1 [tv_show_2 tv_show_3 ...]"
+    (>&2 echo "Usage: $0 tv_show_1 [tv_show_2 tv_show_3 ...]")
     exit 1
 fi
 
 for PARAM_DIRECTORY in "$@"
 do
     if [[ ! -d "$PARAM_DIRECTORY" ]]; then
-        echo "The folder '$PARAM_DIRECTORY' does not exist."
+        (>&2 echo "The folder '$PARAM_DIRECTORY' does not exist.")
         continue
     fi
 
     if [[ ! "$(ls "$PARAM_DIRECTORY" | grep "$TVSHOW_EXTENSION")" ]]; then
-        echo "The folder '$PARAM_DIRECTORY' contains no '$TVSHOW_EXTENSION' files."
+        (>&2 echo "The folder '$PARAM_DIRECTORY' contains no '$TVSHOW_EXTENSION' files.")
         continue
     fi
 
     if [[ ! "$(ls "$PARAM_DIRECTORY" | grep "$SUBTITLE_EXTENSION")" ]]; then
-        echo "The folder '$PARAM_DIRECTORY' contains no '$SUBTITLE_EXTENSION' files."
+        (>&2 echo "The folder '$PARAM_DIRECTORY' contains no '$SUBTITLE_EXTENSION' files.")
         continue
     fi
 
@@ -41,7 +41,7 @@ do
         SUBTITLE_FRE="$PARAM_DIRECTORY/$TITLE.fre.$SUBTITLE_EXTENSION"
 
         if [[ ! -f "$SUBTITLE_ENG" ]] || [[ ! -f "$SUBTITLE_FRE" ]]; then
-            echo "English and/or french subtitles are missing."
+            (>&2 echo "English and/or french subtitles are missing.")
             continue
         fi
 
@@ -54,7 +54,7 @@ do
         mkvmerge --output "$FILE(1)" --no-attachments --no-track-tags --no-global-tags --no-subtitles --language "$VIDEO_ID":eng --track-name "$VIDEO_ID:$TRACK_NAME" --default-track "$VIDEO_ID":yes --language "$AUDIO_ID":eng --track-name "$AUDIO_ID":Anglais --default-track "$AUDIO_ID":yes "$FILE" --language 0:eng --track-name 0:Anglais "$SUBTITLE_ENG" --language 0:fre --track-name 0:Français --default-track 0:yes "$SUBTITLE_FRE" --title "$TITLE" --track-order 0:"$VIDEO_ID",0:"$AUDIO_ID",1:0,2:0
 
         if [[ ! -f "$FILE(1)" ]]; then
-            echo "An error occurred during the creation of the episode."
+            (>&2 echo "An error occurred during the creation of the episode.")
             continue
         fi
 
